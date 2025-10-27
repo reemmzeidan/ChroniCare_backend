@@ -31,13 +31,6 @@ const userSchema = new Schema({
     age:{
         type: Number,
         required: [true, "Age is required"],
-
-    },
-
-    password:{
-        type: String,
-        required: [true, "Username is required"],
-
     },
 
     gender: {
@@ -79,13 +72,50 @@ const userSchema = new Schema({
         ref: "Appointment",
 
     },],
-     
+    
+
+    password:{
+        type: String,
+        required: [true, "Password is required"],
+        trim: true,
+        minLength:8,
+
+    },
+
+    passwordConfirm:{
+        type: String,
+        trim: true,
+        minLength:8,
+
+    },
+
+    passwordChangedAt: Date,
    
 
 },
 {timestamps: true}
 );
 
-module.exports = mongoose.model("User",userSchema) //to export it
+userSchema.pre("save", async function(next){
+try{
+    if(!this.isModified("password")) { 
+        return next(); 
+    }
+    this.password = await bcrypt.hash(this.password, 12);
+    this.passwordConfirm = undefined; 
+
+}catch(err){
+    console.log(err)
+}
+});
+
+userSchema.methods.checkPassword = async function(candidatePassword, userPassword){ //candidate coming from frontend & user hashed saved pass coming from db
+    return await bcrypt.compare(candidatePassword,userPassword);
+ 
+};
+
+
+
+module.exports = mongoose.model("User",userSchema) 
 
 //User --> users

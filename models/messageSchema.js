@@ -9,9 +9,9 @@ const messageSchema = new Schema({
     required: true
    },
    
-   patient: {
+   messageOwner: {
     type: Schema.Types.ObjectId,
-    ref: "Patient",
+    ref: "User",
     required: true
    },
 

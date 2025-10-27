@@ -14,11 +14,10 @@ const doctorSchema = new Schema({
         required: [true, "Specialization is required"],
     },
 
-    patients: {
+    patients: [{
     type: Schema.Types.ObjectId,
     ref: "Patient",
-    required: true
-   },
+   }],
 
      
 

@@ -3,12 +3,12 @@ const Schema = mongoose.Schema;
 
 const trackingSchema = new Schema({
 
-    patient: [{
+    patient: {
         type: Schema.Types.ObjectID,  
         ref: "Patient",
         required: [true, "Patient is required"]
 
-    },],
+    },
 
     bloodPressure: {
         type: String,
