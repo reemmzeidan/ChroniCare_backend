@@ -3,6 +3,7 @@ const Doctor = require("../models/doctorSchema");
 const Tracking = require("../models/trackingSchema");
 
 
+
 exports.addPatient = async (req, res) => {
   try {
     const { user, linkedDoctor, medicalHistory } = req.body;
@@ -45,6 +46,18 @@ exports.getPatientById = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+exports.getPatientByUserId = async (req, res) => {
+  try {
+    const patient = await Patient.findOne({ user: req.params.userId })
+      .populate("user linkedDoctor trackingData");
+    if (!patient) return res.status(404).json({ message: "Patient not found" });
+    res.status(200).json(patient);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 
 
 exports.updateMedicalHistory = async (req, res) => {
@@ -118,5 +131,24 @@ exports.getTrackingHistory = async (req, res) => {
     res.status(200).json({ trackingData: patient.trackingData });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+// GET profile by user ID
+exports.getPatientProfile = async (req, res) => {
+  try {
+    const patient = await Patient.findOne({ user: req.params.userId }).populate("user");
+
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: patient,
+    });
+  } catch (error) {
+    console.error("Error fetching patient profile:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

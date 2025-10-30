@@ -4,13 +4,13 @@ const Schema = mongoose.Schema;
 const patientSchema = new Schema({
 
    user: {
-    type: String,
+    type: Schema.Types.ObjectId,
     ref: "User",
     required: true
    },
 
    linkedDoctor: {
-    type: String,
+    type: Schema.Types.ObjectId,
     ref: "Doctor",
    },
 
@@ -21,7 +21,7 @@ const patientSchema = new Schema({
    
    
     medicalHistory: {
-        type: [{String}],
+        type: [Schema.Types.ObjectId],
         required: [true, "Medical History is required"],
     },  
 },

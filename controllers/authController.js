@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs'); 
 const User = require("../models/userSchema");
+const validator = require("validator");
 
 const signToken = (user) => {
     return jwt.sign(
@@ -26,6 +27,53 @@ const createSendToken = (user, statusCode, message, res) => {
         data: {user: sanitizeUser},
         message
     })
+};
+
+exports.signup = async (req, res) => {
+  try {
+    const { firstName, lastName, username, email, age, gender, role, phoneNumber, password, passwordConfirm } = req.body;
+
+    // Validate email
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ message: "Invalid email address" });
+    }
+
+    // Check if user exists
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    if (existingUser) {
+      return res.status(409).json({ message: "User already exists" });
+    }
+
+    // Check password match
+    if (password !== passwordConfirm) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Create new user
+    const newUser = await User.create({
+      firstName,
+      lastName,
+      username,
+      email,
+      age,
+      gender,
+      role,
+      phoneNumber,
+      password: hashedPassword,
+      passwordConfirm: hashedPassword,
+      passwordChangedAt: Date.now(),
+    });
+
+    // Optionally: send JWT token immediately
+    createSendToken(newUser, 201, "Signup successful", res);
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error, try again later" });
+  }
 };
 
 exports.login = async(req,res) => {

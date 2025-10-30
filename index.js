@@ -18,9 +18,18 @@ const chatRoomRoutes = require("./routers/chatRoomRoutes");
 const emergencyAlertRoutes = require("./routers/emergencyAlertRoutes");
 const appointmentRoutes = require("./routers/appointmentRoutes");
 
+
 DB();   
 
 app.use(express.json())
+
+const cors = require("cors");
+
+app.use(cors({
+  origin: "http://localhost:5173", // your frontend URL
+  credentials: true,
+}));
+
 app.use("/api/tracking", trackingRoutes);
 app.use("/api/resources", resourceRoutes);
 app.use("/api/reports", reportRoutes);
